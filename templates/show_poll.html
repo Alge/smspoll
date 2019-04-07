@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2>Poll - {{poll.name}}</h2>
+
+{% for choice in poll.choices %}
+<div class"choice">
+    <h3>{{ choice.name }}</h3>
+    <h4>{{ choice.descriptiton }}</h4>
+    <p>Votes: {{choice.answers|length}}</p>
+</div>
+{% endfor %}
+{% endblock %}
