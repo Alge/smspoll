@@ -19,6 +19,7 @@ class User(BaseModel):
 class Poll(BaseModel):
     uid = peewee.CharField(unique=True, default= lambda: uuid.uuid4().hex)
     name = peewee.CharField()
+    description = peewee.CharField(default="")
     number = peewee.CharField(unique=True)
     owner = peewee.ForeignKeyField(User, backref="polls")
     created = peewee.DateTimeField(default=datetime.datetime.utcnow())
@@ -54,7 +55,21 @@ class Poll(BaseModel):
         c.add_answer(number)
         print("Done adding vote from number: {} on choice: {}".format(number, c))
 
+    def to_dict(self):
+        data = {}
+        data["id"] = self.uid
+        data["name"] = self.name
+        data["description"] = self.description
+        data["owner"] = self.owner.uid
+        #data["created"] = self.created
+        data["choices"] = []
+        for c in self.choices:
+            data["choices"].append(c.to_dict())
+
+        return data
+
 class Choice(BaseModel):
+    uid = peewee.CharField(unique=True, default= lambda: uuid.uuid4().hex)
     poll = peewee.ForeignKeyField(Poll, backref='choices')
     name = peewee.CharField()
     description = peewee.CharField()
@@ -69,6 +84,14 @@ class Choice(BaseModel):
         answer.poll = self.poll
         answer.number = number
         answer.save()
+
+    def to_dict(self):
+        data = {}
+        data["id"] = self.uid
+        data["name"] = self.name
+        data["description"] = self.description
+        data["votes"] = len(self.answers)
+        return data
 
 class Answer(BaseModel):
     choice = peewee.ForeignKeyField(Choice, backref='answers')

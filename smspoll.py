@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template
 from flask import request
 import peewee
+import json
 
 from models import Poll
 from models import User
@@ -27,7 +28,6 @@ def create_poll():
 @app.route("/create_poll", methods=['POST'])
 def submit_poll():
     return render_template("create_poll.html")
-
 
 @app.route("/poll/<poll_id>")
 def show_poll(poll_id):
@@ -58,6 +58,14 @@ def sms_in():
 
     print("Yay, got an SMS; from: {}, to: {}, message: {}".format(f, t, m))
     return ""
+
+@app.route("/api/polls/<poll_id>")
+def api_get_poll(poll_id):
+    poll = Poll.get_or_none(Poll.uid == poll_id)
+    if not poll:
+        return "404 - poll not found", 404
+
+    return json.dumps(poll.to_dict()), 200
 
 if __name__ == "__main__":
   app.run()
