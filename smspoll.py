@@ -11,25 +11,25 @@ from models import Answer
 
 db = peewee.SqliteDatabase("db.sqlite")
 
-app = Flask(__name__)
+application = Flask(__name__)
 
-@app.route("/")
+@application.route("/")
 def hello():
     return render_template("base.html", message="Hejsan!!")
 
-@app.route("/register")
+@application.route("/register")
 def register():
     return render_template("register.html")
 
-@app.route("/create_poll", methods=['GET'])
+@application.route("/create_poll", methods=['GET'])
 def create_poll():
     return render_template("create_poll.html")
 
-@app.route("/create_poll", methods=['POST'])
+@application.route("/create_poll", methods=['POST'])
 def submit_poll():
     return render_template("create_poll.html")
 
-@app.route("/poll/<poll_id>")
+@application.route("/poll/<poll_id>")
 def show_poll(poll_id):
     print("Trying to show poll: {}".format(poll_id))
     poll = Poll.get_or_none(Poll.uid == poll_id)
@@ -38,7 +38,7 @@ def show_poll(poll_id):
 
     return render_template("show_poll.html", poll=poll)
 
-@app.route("/sms_in", methods = ['POST'])
+@application.route("/sms_in", methods = ['POST'])
 def sms_in():
     f = request.form.get('from')
     t = request.form.get('to')
@@ -59,7 +59,7 @@ def sms_in():
     print("Yay, got an SMS; from: {}, to: {}, message: {}".format(f, t, m))
     return ""
 
-@app.route("/api/polls/<poll_id>")
+@application.route("/api/polls/<poll_id>")
 def api_get_poll(poll_id):
     poll = Poll.get_or_none(Poll.uid == poll_id)
     if not poll:
@@ -68,4 +68,4 @@ def api_get_poll(poll_id):
     return json.dumps(poll.to_dict()), 200
 
 if __name__ == "__main__":
-  app.run()
+  application.run()
