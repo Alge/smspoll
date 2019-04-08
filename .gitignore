@@ -2,3 +2,5 @@ db.sqlite
 config.py
 *.swp
 *.pyc
+env/
+*.sock
