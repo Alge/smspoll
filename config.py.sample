@@ -1,1 +1,15 @@
 # Config file, will contain 46elks api credentials and database login
+
+# hostname for the websitte
+hostname = "example.com"
+
+# 46elks credentials
+46elks_username = "********************************"
+46elks_secret = "********************************"
+
+# Database info
+database_host = "127.0.0.1"
+database_port = 1234
+database_username = "username"
+database_password = "password"
+database_name = "smspoll"
