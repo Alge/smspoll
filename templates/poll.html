@@ -11,7 +11,7 @@ function init_websocket(){
     console.log(webSocket);
 
     webSocket.onopen = function (event) {
-        webSocket.send('{"subscribe_polls":[{{ poll.id }}]}'); 
+        webSocket.send('{"subscribe_poll":[{{ poll.id }}]}'); 
     };
 
     webSocket.onmessage = function (event) {
@@ -23,8 +23,8 @@ function init_websocket(){
 
 window.onload = function() {
 
-    poll = {"name":{{ poll.name }} }
-    update_data(poll)
+    poll = {"name":"{{ poll.name }}" }
+    //update_data(poll)
 
     init_websocket();
 };

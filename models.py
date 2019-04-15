@@ -54,6 +54,7 @@ class Poll(BaseModel):
                 print("No other duplicates found, proceding")
         c.add_answer(number)
         print("Done adding vote from number: {} on choice: {}".format(number, c))
+        return True
 
     def to_dict(self):
         data = {}
