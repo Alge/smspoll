@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Active polls:</h2>
+
+    <ul>
+    {% for poll in polls %}
+        <li><a href="/poll/{{ poll.id }}">{{ escape(poll.name)}}</a></li>
+    {% end %}
+    </ul>
+{% end %}

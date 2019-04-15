@@ -2,19 +2,19 @@
 {% block content %}
 
 <h2>Create new poll</h2>
-
-<label>Name</label><input type="text" name="displayname"></br>
-<label>Description</label><input type="text" name="email"></br>
-<label>Allow the same number to vote on multiple choices</label><input type="checkbox" name="allow_multiple_choices"></br>
-<label>Allow the same number to vote multiple times on the same choice</label><input type="checkbox" name="allow_duplicate_answers"></br>
-<label>Allow users to update their answers by voting agian</label><input type="checkbox" name="allow_edit_answers"></br>
-</br>
-<h3>1</h3>
-<label>Name</label><input type="text" name="name-1"></br>
-<label>Description</label><input type="text" name="description-1"></br>
-<h3>2</h3>
-<label>Name</label><input type="text" name="name-2"></br>
-<label>Description</label><input type="text" name="description-2"></br>
-<input type="submit" text="Add poll">
-
-{% endblock %}
+<form method="POST" action="">
+    <label>Name</label><input type="text" name="name"></br>
+    <label>Description</label><input type="text" name="description"></br>
+    <label>Allow the same number to vote on multiple choices</label><input type="checkbox" name="allow_multiple_choices"></br>
+    <label>Allow the same number to vote multiple times on the same choice</label><input type="checkbox" name="allow_duplicate_answers"></br>
+    <label>Allow users to update their answers by voting agian</label><input type="checkbox" name="allow_edit_answers"></br>
+    </br>
+    <h3>1</h3>
+    <label>Code</label><input type="text" name="name-1"></br>
+    <label>Description</label><input type="text" name="description-1"></br>
+    <h3>2</h3>
+    <label>Code</label><input type="text" name="name-2"></br>
+    <label>Description</label><input type="text" name="description-2"></br>
+    <input type="submit" text="Add poll">
+</form>
+{% end %}

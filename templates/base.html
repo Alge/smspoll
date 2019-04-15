@@ -4,16 +4,14 @@
 </head>
 
 <body>
-    <title>{% block title %}SMSpoll{% endblock %}</title>
-
-    {% block content %}{% endblock %}
+    <title>{% block title %}SMSpoll{% end %}</title>
+    {% block heading %}<h1>SMS-poll.se</h1>{% end %}
+    {% block content %}{% end %}
 
     <div id="footer">
         {% block footer %}
         &copy; Copyright 2019 by <a href="http://alge.se/">Martin Alge</a>.
-        {% endblock %}
+        {% end %}
     </div>
 </body>
-
-
 </html>

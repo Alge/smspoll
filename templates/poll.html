@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<script>
+
+function init_websocket(){
+    url="ws://localhost:8888/sockets/poll";
+    webSocket = new WebSocket(url);
+    console.log("Created websocket");
+    console.log(webSocket);
+
+    webSocket.onopen = function (event) {
+        webSocket.send('{"subscribe_polls":[{{ poll.id }}]}'); 
+    };
+
+    webSocket.onmessage = function (event) {
+        response = JSON.parse(event.data);
+        console.log(response);
+        document.getElementById("debug").innerHTML = event.data;
+    };
+}
+
+window.onload = function() {
+
+    poll = {"name":{{ poll.name }} }
+    update_data(poll)
+
+    init_websocket();
+};
+
+
+
+function update_data(poll){
+    p = document.getElementById("poll");
+    p.innerHTML = poll.name
+}
+
+</script>
+<div class="poll", id="{{ poll.id }}">
+    <h2></h2>
+
+    <div id="debug"></div>
+
+    <p>{{ escape(poll.description) }}</p>
+
+    <p>Send an SMS to {{ poll.number }} with the correct code to vote!</p>
+
+    {% for choice in poll.choices %}
+        <div class="choice" id="{{ choice.id }}">
+            <div class="choice_code">
+                 Code: {{ escape(choice.name) }}
+            </div>
+            <div class="choice_description">
+                 {{ escape(choice.description) }}
+            </div>
+            <div class="choice_votes">
+                 Votes: {{ str(len(choice.answers)) }}
+            </div>
+        </div></br>
+    {% end %}
+</div>
+{% end %}
