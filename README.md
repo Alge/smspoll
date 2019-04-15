@@ -7,5 +7,8 @@ uses 46elks API for incoming SMS
 Install the dependencies:
 pip install -r requirements.txt
 
-Start the dev server with:
+### Setting up the database
+python setup.py
+
+### Start the dev server with:
 python smspoll.py
