@@ -5,6 +5,7 @@ import tornado.websocket
 from tornado.options import define, options, parse_command_line
 
 import json
+import os
 
 import pprint
 
@@ -122,14 +123,24 @@ class PollSocketHandler(tornado.websocket.WebSocketHandler):
             clients[poll.id].remove(self)
         print("WebSocket closed")
 
+settings = {
+    "static_path": os.path.join(os.path.dirname(__file__), "static"),
+    "cookie_secret": "__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
+    "login_url": "/login",
+    "xsrf_cookies": True,
+    "debug": True
+}
 
-app = tornado.web.Application([
-    (r'/', IndexHandler),
-    (r'/create_poll', CreatePollHandler),
-    (r'/sms_in', IncomingSMSHandler),
-    (r'/poll/(?P<poll_id>\w+)', PollHandler),
-    (r'/sockets/poll', PollSocketHandler),
-], debug=True)
+app = tornado.web.Application(
+    [
+        (r'/', IndexHandler),
+        (r'/create_poll', CreatePollHandler),
+        (r'/sms_in', IncomingSMSHandler),
+        (r'/poll/(?P<poll_id>\w+)', PollHandler),
+        (r'/sockets/poll', PollSocketHandler),
+    ],
+    **settings
+)
 
 if __name__ == '__main__':
     parse_command_line()
