@@ -22,16 +22,20 @@ define("port", default=8888, help="run on the given port", type=int)
 # we gonna store clients in dictionary..
 clients = dict()
 
-def send_update(poll):
+def update_all_pollclients(poll):
     print("Clients")
     pprint.pprint(clients)
     for client in clients[poll.id]:
-        try:
-            print("Sending update to client: {} with poll: {}".format(client, poll.id))
-            client.write_message(json.dumps(poll.to_dict()))
-        except:
-            print("failed to send update")
-            client.close()
+        send_update(poll, client)
+
+def send_update(poll, client):
+    try:
+        print("Sending update to client: {} with poll: {}".format(client, poll.id))
+        data = {"result": "success", "type": "poll", "data":poll.to_dict()}
+        client.write_message(json.dumps(data))
+    except:
+        print("failed to send update")
+        client.close()
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
@@ -54,7 +58,7 @@ class IncomingSMSHandler(tornado.web.RequestHandler):
             else:
                 if poll.add_answer(sms["message"], sms["from"]):
                     self.write("Success")
-                    send_update(poll)
+                    update_all_pollclients(poll)
                 else:
                     self.write("Failed to add answer")
         except Exception as e:
@@ -113,8 +117,7 @@ class PollSocketHandler(tornado.websocket.WebSocketHandler):
                     clients[poll.id] = []
                 clients[poll.id].append(self)
                 self.write_message(json.dumps({"result": "success", "message": "subscribed to poll"}))
-                self.write_message(json.dumps(poll.to_dict()))
-
+                send_update(poll, self)
         else:
             self.write_message(json.dumps({"error":"unknown command"}))
 
