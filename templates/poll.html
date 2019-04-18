@@ -5,7 +5,7 @@
 <script>
 
 function init_websocket(){
-    url="ws://smspoll.se:8888/sockets/poll";
+    url="wss://smspoll.se/sockets/poll";
     webSocket = new WebSocket(url);
     console.log("Created websocket");
     console.log(webSocket);
