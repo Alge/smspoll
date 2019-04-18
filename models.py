@@ -1,7 +1,6 @@
 import peewee
 import sys
 import datetime
-import uuid
 
 
 database = peewee.SqliteDatabase("db.sqlite")
@@ -14,10 +13,9 @@ class User(BaseModel):
     displayname = peewee.CharField()
     email = peewee.CharField(unique=True)
     password = peewee.CharField()
-    uid = peewee.CharField(unique=True, default = lambda: uuid.uuid4().hex)
+    created = peewee.DateTimeField(default=datetime.datetime.utcnow())
 
 class Poll(BaseModel):
-    uid = peewee.CharField(unique=True, default= lambda: uuid.uuid4().hex)
     name = peewee.CharField()
     description = peewee.CharField(default="")
     number = peewee.CharField(unique=True)
@@ -58,10 +56,10 @@ class Poll(BaseModel):
 
     def to_dict(self):
         data = {}
-        data["id"] = self.uid
+        data["id"] = self.id
         data["name"] = self.name
         data["description"] = self.description
-        data["owner"] = self.owner.uid
+        data["owner"] = self.owner.id
         #data["created"] = self.created
         data["choices"] = []
         for c in self.choices:
@@ -70,8 +68,8 @@ class Poll(BaseModel):
         return data
 
 class Choice(BaseModel):
-    uid = peewee.CharField(unique=True, default= lambda: uuid.uuid4().hex)
     poll = peewee.ForeignKeyField(Poll, backref='choices')
+    created = peewee.DateTimeField(default=datetime.datetime.utcnow())
     name = peewee.CharField()
     description = peewee.CharField()
     class Meta:
@@ -88,7 +86,7 @@ class Choice(BaseModel):
 
     def to_dict(self):
         data = {}
-        data["id"] = self.uid
+        data["id"] = self.id
         data["name"] = self.name
         data["description"] = self.description
         data["votes"] = len(self.answers)
