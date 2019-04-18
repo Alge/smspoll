@@ -93,6 +93,9 @@ class PollSocketHandler(tornado.websocket.WebSocketHandler):
     #    tornado.websocket.WebSocketHandler.__init__(self)
     #    self.subscriptions = []
 
+    def check_origin(self, origin):
+        return True
+
     def open(self):
         print("WebSocket opened for poll")
         self.subscriptions = []
