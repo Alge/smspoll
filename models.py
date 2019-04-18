@@ -60,6 +60,7 @@ class Poll(BaseModel):
         data["name"] = self.name
         data["description"] = self.description
         data["owner"] = self.owner.id
+        data["number"] = self.number
         #data["created"] = self.created
         data["choices"] = []
         for c in self.choices:

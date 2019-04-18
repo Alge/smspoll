@@ -31,7 +31,7 @@ def update_all_pollclients(poll):
 def send_update(poll, client):
     try:
         print("Sending update to client: {} with poll: {}".format(client, poll.id))
-        data = {"result": "success", "type": "poll", "data":poll.to_dict()}
+        data = {"type": "poll", "data":poll.to_dict()}
         client.write_message(json.dumps(data))
     except:
         print("failed to send update")
@@ -119,7 +119,12 @@ class PollSocketHandler(tornado.websocket.WebSocketHandler):
                 if poll.id not in clients.keys():
                     clients[poll.id] = []
                 clients[poll.id].append(self)
-                self.write_message(json.dumps({"result": "success", "message": "subscribed to poll"}))
+                r = {
+                        'type': 'response',
+                        'response': 'success',
+                        'message': "subscribed to poll {}".format(poll.id)
+                    }
+                self.write_message(json.dumps(r))
                 send_update(poll, self)
         else:
             self.write_message(json.dumps({"error":"unknown command"}))
