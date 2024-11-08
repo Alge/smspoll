@@ -1,3 +1,5 @@
+import requests
+
 import tornado.ioloop
 import tornado.web
 import tornado.websocket
@@ -17,16 +19,16 @@ from models import get_db
 
 db = get_db()
 
-define("port", default=8888, help="run on the given port", type=int)
+define("port", default=7445, help="run on the given port", type=int)
+define("hostname", default="poll.alge.se", help="domain that the server is reachable on", type=str)
 
 # we gonna store clients in dictionary..
 clients = dict()
 
 def update_all_pollclients(poll):
-    print("Clients")
-    pprint.pprint(clients)
-    for client in clients[poll.id]:
-        send_update(poll, client)
+    if poll.id in clients:
+      for client in clients[poll.id]:
+          send_update(poll, client)
 
 def send_update(poll, client):
     try:
@@ -53,17 +55,20 @@ class IncomingSMSHandler(tornado.web.RequestHandler):
             sms["from"] = self.get_argument("from")
             sms["message"] = self.get_argument("message")
             poll = Poll.get_or_none(Poll.number == sms["to"])
-            if not poll:
-                self.write("No poll with that number")
+            if poll is None:
+                print("No poll with that number")
+                #self.write("No poll with that number")
             else:
                 if poll.add_answer(sms["message"], sms["from"]):
-                    self.write("Success")
+                    #self.write("Success")
                     update_all_pollclients(poll)
                 else:
-                    self.write("Failed to add answer")
+                    pass
+                    #self.write("Failed to add answer")
         except Exception as e:
-            print(e)
-            self.write("Failed tot parse request")
+            print(f"Failed parsing request: {e}")
+            raise e
+            #self.write("Failed to parse request")
 
         self.finish()
 
@@ -86,7 +91,7 @@ class PollHandler(tornado.web.RequestHandler):
         if poll == None:
             raise tornado.web.HTTPError(404)
 
-        self.render("templates/poll.html", poll = poll)
+        self.render("templates/poll.html", poll=poll, hostname=options.hostname)
 
 class PollSocketHandler(tornado.websocket.WebSocketHandler):
     #def __init__(self):
@@ -156,5 +161,16 @@ app = tornado.web.Application(
 if __name__ == '__main__':
     parse_command_line()
     print(f"Starting server on port {options.port}")
+    try:
+      # Force use of ipv4
+      requests.packages.urllib3.util.connection.HAS_IPV6 = False
+      external_ip = requests.get('https://ident.me', timeout=1).text
+    except Exception as e:
+      print(f"Failed fetching external IP: {e}")
+      external_ip = "127.0.0.1"
+
+    print(f"Configure incoming SMS to be sent to: https://{options.hostname}/sms_in and make sure your ports are open!")
+
+
     app.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()

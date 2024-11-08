@@ -5,7 +5,7 @@
 <script>
 
 function init_websocket(){
-    url="wss://smspoll.se/sockets/poll";
+    url="wss://{{ hostname }}/sockets/poll";
     webSocket = new WebSocket(url);
     console.log("Created websocket");
     console.log(webSocket);
@@ -17,27 +17,33 @@ function init_websocket(){
     webSocket.onmessage = function (event) {
         response = JSON.parse(event.data);
         console.log(response);
-        document.getElementById("debug").innerHTML = event.data;
+        //document.getElementById("debug").innerHTML = event.data;
+        update_data(response['data']);
     };
 }
 
 window.onload = function() {
-
-    poll = {"name":"{{ poll.name }}" }
-    //update_data(poll)
-
     init_websocket();
 };
 
 
 
-function update_data(poll){
+function update_data(data){
+    console.log("Updating poll data")
     p = document.getElementById("poll");
-    p.innerHTML = poll.name
+    for (i in data.choices){
+      choicedata = data['choices'][i]
+
+      element = p.querySelector("#choice_"+choicedata['id'])
+      console.log(i)
+      console.log(element)
+      element.querySelector(".choice_votes").querySelector(".votes").textContent = choicedata['votes']
+
+    }
 }
 
 </script>
-<div class="poll", id="{{ poll.id }}">
+<div class="poll" id="poll">
     <h2></h2>
 
     <div id="debug"></div>
@@ -47,15 +53,15 @@ function update_data(poll){
     <p>Send an SMS to {{ poll.number }} with the correct code to vote!</p>
 
     {% for choice in poll.choices %}
-        <div class="choice" id="{{ choice.id }}">
-            <div class="choice_code">
-                 Code: {{ escape(choice.name) }}
-            </div>
+        <div class="choice" id="choice_{{ choice.id }}">
             <div class="choice_description">
                  {{ escape(choice.description) }}
             </div>
             <div class="choice_votes">
-                 Votes: {{ str(len(choice.answers)) }}
+                 <label>Votes: </label><span class="votes">{{ str(len(choice.answers)) }}</span>
+            </div>
+            <div class="choice_code">
+                 Send "{{ escape(choice.name) }}" to {{ poll.number }} to vote.
             </div>
         </div></br>
     {% end %}

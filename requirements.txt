@@ -1,2 +1,3 @@
 peewee
 tornado
+requests
